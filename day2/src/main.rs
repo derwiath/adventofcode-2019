@@ -1,30 +1,37 @@
 use std::env;
 use std::fs;
 
-fn exec_int_code(program: &mut [usize]) {
-    let mut i: usize = 0;
-    while i < program.len() {
-        let opcode = program[i];
-        match program[i] {
-            1 | 2 => {
-                let input1 = program[i + 1];
-                let input2 = program[i + 2];
-                let output = program[i + 3];
+enum Instruction {
+    Add(usize, usize, usize),
+    Mul(usize, usize, usize),
+    Halt,
+}
 
-                if opcode == 1 {
-                    program[output] = program[input1] + program[input2];
-                } else {
-                    program[output] = program[input1] * program[input2];
-                }
+fn read_instruction(memory: &[usize], ip: usize) -> Instruction {
+    match memory[ip] {
+        1 => Instruction::Add(memory[ip + 1], memory[ip + 2], memory[ip + 3]),
+        2 => Instruction::Mul(memory[ip + 1], memory[ip + 2], memory[ip + 3]),
+        99 => Instruction::Halt,
+        _ => panic!("Invalid opcode {} at {}", memory[0], ip),
+    }
+}
+
+fn exec_int_code(memory: &mut [usize]) {
+    let mut ip: usize = 0;
+    while ip < memory.len() {
+        let instr = read_instruction(&memory[..], ip);
+
+        match instr {
+            Instruction::Add(input1, input2, output) => {
+                memory[output] = memory[input1] + memory[input2];
+                ip += 4;
             }
-            99 => {
-                return;
+            Instruction::Mul(input1, input2, output) => {
+                memory[output] = memory[input1] * memory[input2];
+                ip += 4;
             }
-            _ => {
-                panic!("Invalid opcode {} at pos {}", opcode, i);
-            }
+            Instruction::Halt => return,
         }
-        i += 4;
     }
 }
 
