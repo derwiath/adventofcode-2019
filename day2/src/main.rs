@@ -1,8 +1,6 @@
-fn main() {
-    println!("Hello, world!");
-}
+use std::env;
+use std::fs;
 
-#[allow(dead_code)]
 fn exec_int_code(program: &mut [usize]) {
     let mut i: usize = 0;
     while i < program.len() {
@@ -28,6 +26,26 @@ fn exec_int_code(program: &mut [usize]) {
         }
         i += 4;
     }
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let filename = args.get(1).expect("Usage: day2 input-filename");
+
+    let contents = fs::read_to_string(filename).expect("Failed to read file");
+    let mut program: Vec<usize> = contents
+        .trim_end()
+        .split(',')
+        .collect::<Vec<&str>>()
+        .iter()
+        .map(|token| token.parse::<usize>().unwrap())
+        .collect();
+
+    program[1] = 12;
+    program[2] = 2;
+
+    exec_int_code(&mut program[..]);
+    println!("Value at position 0: {}", program[0]);
 }
 
 #[cfg(test)]
