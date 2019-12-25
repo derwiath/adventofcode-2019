@@ -18,6 +18,23 @@ fn intersects(range1: Range, range2: Range) -> bool {
     !(range1.to < range2.from || range1.from > range2.to)
 }
 
+struct HorzLine {
+    x: Range,
+    y: i32,
+}
+
+impl HorzLine {
+    #[allow(dead_code)]
+    pub fn new(x: Range, y: i32) -> HorzLine {
+        HorzLine { x, y }
+    }
+}
+
+#[allow(dead_code)]
+fn intersects_hh(line1: HorzLine, line2: HorzLine) -> bool {
+    line1.y == line2.y && intersects(line1.x, line2.x)
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let filename = args.get(1).expect("Usage: day3 input-filename");
@@ -29,6 +46,24 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn horizontal_intersects_horizontal() {
+        assert_eq!(
+            intersects_hh(
+                HorzLine::new(Range::new(0, 1), 1),
+                HorzLine::new(Range::new(0, 2), 1)
+            ),
+            true
+        );
+        assert_eq!(
+            intersects_hh(
+                HorzLine::new(Range::new(0, 1), 1),
+                HorzLine::new(Range::new(0, 2), 2)
+            ),
+            false
+        );
+    }
 
     #[test]
     fn empty_range_intersects_when_equal() {
