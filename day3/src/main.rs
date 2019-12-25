@@ -30,9 +30,26 @@ impl HorzLine {
     }
 }
 
+struct VertLine {
+    x: i32,
+    y: Range,
+}
+
+impl VertLine {
+    #[allow(dead_code)]
+    pub fn new(x: i32, y: Range) -> VertLine {
+        VertLine { x, y }
+    }
+}
+
 #[allow(dead_code)]
 fn intersects_hh(line1: HorzLine, line2: HorzLine) -> bool {
     line1.y == line2.y && intersects(line1.x, line2.x)
+}
+
+#[allow(dead_code)]
+fn intersects_vv(line1: VertLine, line2: VertLine) -> bool {
+    line1.x == line2.x && intersects(line1.y, line2.y)
 }
 
 fn main() {
@@ -60,6 +77,24 @@ mod tests {
             intersects_hh(
                 HorzLine::new(Range::new(0, 1), 1),
                 HorzLine::new(Range::new(0, 2), 2)
+            ),
+            false
+        );
+    }
+
+    #[test]
+    fn vertical_intersects_vertical() {
+        assert_eq!(
+            intersects_vv(
+                VertLine::new(1, Range::new(0, 1)),
+                VertLine::new(1, Range::new(0, 2))
+            ),
+            true
+        );
+        assert_eq!(
+            intersects_vv(
+                VertLine::new(1, Range::new(0, 1)),
+                VertLine::new(2, Range::new(0, 2))
             ),
             false
         );
